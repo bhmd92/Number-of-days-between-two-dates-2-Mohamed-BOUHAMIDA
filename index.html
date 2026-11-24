@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حاسبة الأيام | Calculatrice de jours | Days Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(145deg, #1e2b3c 0%, #0f1a26 100%);
+            padding: 20px;
+            margin: 0;
+        }
+
+        .calculator-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 48px;
+            padding: 2px;
+            box-shadow: 0 30px 50px -20px rgba(0, 0, 0, 0.8), inset 0 1px 2px rgba(255, 255, 255, 0.1);
+            width: 100%;
+            max-width: 750px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .calculator-inner {
+            background: rgba(18, 28, 40, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 46px;
+            padding: 30px 30px 20px;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .lang-switch {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .lang-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ccddee;
+            padding: 8px 24px;
+            border-radius: 40px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .lang-btn:hover {
+            background: rgba(255, 215, 120, 0.15);
+            border-color: rgba(255, 215, 120, 0.5);
+            color: #ffe9b6;
+            transform: translateY(-2px);
+        }
+
+        .lang-btn.active {
+            background: linear-gradient(145deg, #c9a24b, #9e7d36);
+            border-color: #e6c677;
+            color: #0a121c;
+            font-weight: 700;
+            box-shadow: 0 8px 15px -5px #c9a24b, inset 0 1px 2px #ffe9b6;
+        }
+
+        .date-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        .date-box {
+            flex: 1 1 250px;
+            background: rgba(10, 20, 30, 0.7);
+            border-radius: 30px;
+            padding: 18px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.6), 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .date-box label {
+            display: block;
+            font-size: 0.9rem;
+            color: #aac0d4;
+            margin-bottom: 10px;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .date-input-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .date-input-group select,
+        .date-input-group input {
+            background: #1e2c3a;
+            border: 1px solid #3d5166;
+            color: #f0f4fa;
+            padding: 12px 12px;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            outline: none;
+            transition: all 0.2s;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+            flex: 1 1 70px;
+            min-width: 0;
+        }
+
+        .date-input-group select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23c9a24b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: left 10px center;
+            background-size: 16px;
+            padding-left: 30px;
+        }
+
+        html[dir="rtl"] .date-input-group select {
+            background-position: right 10px center;
+            padding-left: 12px;
+            padding-right: 30px;
+        }
+
+        .date-input-group input:focus,
+        .date-input-group select:focus {
+            border-color: #c9a24b;
+            box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.3), inset 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .date-input-group input::placeholder {
+            color: #6b7f94;
+            font-weight: 300;
+        }
+
+        /* remove spinners */
+        .date-input-group input[type="number"]::-webkit-outer-spin-button,
+        .date-input-group input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .date-input-group input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        .result-area {
+            background: linear-gradient(145deg, #0e1a24, #0b131b);
+            border-radius: 40px;
+            padding: 22px 25px;
+            margin: 20px 0 25px;
+            text-align: center;
+            border: 1px solid rgba(201, 162, 75, 0.3);
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8), 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .result-label {
+            font-size: 1rem;
+            color: #8aa2b9;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            font-weight: 400;
+        }
+
+        .result-days {
+            font-size: 3.8rem;
+            font-weight: 800;
+            line-height: 1.2;
+            color: #f5e6c4;
+            text-shadow: 0 0 20px rgba(201, 162, 75, 0.7), 0 4px 10px rgba(0, 0, 0, 0.8);
+            letter-spacing: 2px;
+        }
+
+        .result-sub {
+            font-size: 0.95rem;
+            color: #93a9bf;
+            margin-top: 6px;
+            font-weight: 300;
+        }
+
+        .credit {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #6a8199;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            margin-top: 12px;
+            letter-spacing: 0.5px;
+            font-weight: 300;
+            transition: color 0.2s;
+        }
+
+        .credit span {
+            color: #c9a24b;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-shadow: 0 0 8px rgba(201, 162, 75, 0.4);
+        }
+
+        .note {
+            font-size: 0.75rem;
+            color: #4a627a;
+            text-align: center;
+            margin-top: 8px;
+            font-weight: 300;
+        }
+
+        /* Responsive */
+        @media (max-width: 550px) {
+            .calculator-inner {
+                padding: 20px 15px 15px;
+            }
+            .result-days {
+                font-size: 2.8rem;
+            }
+            .date-box {
+                padding: 15px;
+            }
+            .lang-btn {
+                padding: 6px 16px;
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .date-input-group {
+                flex-direction: column;
+            }
+            .date-input-group select,
+            .date-input-group input {
+                width: 100%;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-card">
+        <div class="calculator-inner">
+            <!-- Language Switcher -->
+            <div class="lang-switch">
+                <button class="lang-btn active" data-lang="ar">العربية</button>
+                <button class="lang-btn" data-lang="fr">Français</button>
+                <button class="lang-btn" data-lang="en">English</button>
+            </div>
+
+            <!-- Date Inputs -->
+            <div class="date-section">
+                <!-- Start Date -->
+                <div class="date-box">
+                    <label id="startLabel">تاريخ البداية</label>
+                    <div class="date-input-group">
+                        <input type="number" id="startDay" min="1" max="31" value="1" placeholder="JJ">
+                        <select id="startMonth"></select>
+                        <input type="number" id="startYear" min="500" max="9999" value="500" placeholder="AAAA">
+                    </div>
+                </div>
+
+                <!-- End Date -->
+                <div class="date-box">
+                    <label id="endLabel">تاريخ النهاية</label>
+                    <div class="date-input-group">
+                        <input type="number" id="endDay" min="1" max="31" value="1" placeholder="JJ">
+                        <select id="endMonth"></select>
+                        <input type="number" id="endYear" min="500" max="9999" value="2025" placeholder="AAAA">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Result -->
+            <div class="result-area">
+                <div class="result-label" id="resultLabel">عدد الأيام</div>
+                <div class="result-days" id="resultDays">0</div>
+                <div class="result-sub" id="resultSub">من البداية إلى النهاية</div>
+            </div>
+
+            <!-- Credit -->
+            <div class="credit">
+                <span>محمد بوحميدة</span>
+            </div>
+            <div class="note" id="noteRange">النطاق يبدأ من 01 يناير 500 ميلادي</div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // --- Translation Data ---
+            const translations = {
+                ar: {
+                    startLabel: "تاريخ البداية",
+                    endLabel: "تاريخ النهاية",
+                    resultLabel: "عدد الأيام",
+                    resultSub: "من البداية إلى النهاية",
+                    noteRange: "النطاق يبدأ من 01 يناير 500 ميلادي",
+                    credit: "محمد بوحميدة",
+                    months: ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"],
+                    dir: "rtl",
+                    invalidDate: "تاريخ غير صالح",
+                    yearMin: "الحد الأدنى للسنة هو 500",
+                    resultUnit: "يوم",
+                    rangeNote: "النطاق يبدأ من 01 يناير 500 ميلادي"
+                },
+                fr: {
+                    startLabel: "Date de début",
+                    endLabel: "Date de fin",
+                    resultLabel: "Nombre de jours",
+                    resultSub: "Du début à la fin",
+                    noteRange: "Plage à partir du 01 janvier 500 après J.-C.",
+                    credit: "Mohamed Bouhamida",
+                    months: ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"],
+                    dir: "ltr",
+                    invalidDate: "Date invalide",
+                    yearMin: "L'année minimale est 500",
+                    resultUnit: "jours",
+                    rangeNote: "Plage à partir du 01 janvier 500 après J.-C."
+                },
+                en: {
+                    startLabel: "Start Date",
+                    endLabel: "End Date",
+                    resultLabel: "Number of Days",
+                    resultSub: "From start to end",
+                    noteRange: "Range starts from 01 January 500 AD",
+                    credit: "Mohamed Bouhamida",
+                    months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+                    dir: "ltr",
+                    invalidDate: "Invalid date",
+                    yearMin: "Minimum year is 500",
+                    resultUnit: "days",
+                    rangeNote: "Range starts from 01 January 500 AD"
+                }
+            };
+
+            let currentLang = 'ar';
+
+            // --- DOM Elements ---
+            const startDay = document.getElementById('startDay');
+            const startMonth = document.getElementById('startMonth');
+            const startYear = document.getElementById('startYear');
+            const endDay = document.getElementById('endDay');
+            const endMonth = document.getElementById('endMonth');
+            const endYear = document.getElementById('endYear');
+            const resultDays = document.getElementById('resultDays');
+            const resultSub = document.getElementById('resultSub');
+            const startLabel = document.getElementById('startLabel');
+            const endLabel = document.getElementById('endLabel');
+            const resultLabel = document.getElementById('resultLabel');
+            const noteRange = document.getElementById('noteRange');
+            const langBtns = document.querySelectorAll('.lang-btn');
+
+            // --- Utility Functions ---
+            function isLeapYear(year) {
+                return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+            }
+
+            function daysInMonth(year, month) {
+                // month: 1-12
+                return new Date(year, month, 0).getDate();
+            }
+
+            // Validate date and return Date object or null
+            function getValidDate(year, month, day) {
+                const y = parseInt(year, 10);
+                const m = parseInt(month, 10);
+                const d = parseInt(day, 10);
+                if (isNaN(y) || isNaN(m) || isNaN(d)) return null;
+                if (y < 500 || y > 9999) return null;
+                if (m < 1 || m > 12) return null;
+                const maxDay = daysInMonth(y, m);
+                if (d < 1 || d > maxDay) return null;
+                return { year: y, month: m, day: d };
+            }
+
+            // Compute difference in days between two dates (inclusive of start? No, standard difference: end - start)
+            function dateDifference(start, end) {
+                const startUTC = Date.UTC(start.year, start.month - 1, start.day);
+                const endUTC = Date.UTC(end.year, end.month - 1, end.day);
+                // Difference in milliseconds
+                const diffMs = endUTC - startUTC;
+                return Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            }
+
+            // --- Update UI Language ---
+            function setLanguage(lang) {
+                currentLang = lang;
+                const t = translations[lang];
+
+                // Update direction and lang attribute
+                document.documentElement.lang = lang;
+                document.documentElement.dir = t.dir;
+
+                // Update static labels
+                startLabel.textContent = t.startLabel;
+                endLabel.textContent = t.endLabel;
+                resultLabel.textContent = t.resultLabel;
+                resultSub.textContent = t.resultSub;
+                noteRange.textContent = t.rangeNote;
+
+                // Update credit (already static but we can update if needed)
+                document.querySelector('.credit span').textContent = t.credit;
+
+                // Update month select options
+                populateMonthSelects(t.months);
+
+                // Update active button
+                langBtns.forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.dataset.lang === lang) {
+                        btn.classList.add('active');
+                    }
+                });
+
+                // Update placeholders
+                startDay.placeholder = lang === 'ar' ? 'يوم' : (lang === 'fr' ? 'JJ' : 'DD');
+                startYear.placeholder = lang === 'ar' ? 'سنة' : (lang === 'fr' ? 'AAAA' : 'YYYY');
+                endDay.placeholder = lang === 'ar' ? 'يوم' : (lang === 'fr' ? 'JJ' : 'DD');
+                endYear.placeholder = lang === 'ar' ? 'سنة' : (lang === 'fr' ? 'AAAA' : 'YYYY');
+
+                // Recalculate to update labels on result
+                calculate();
+            }
+
+            function populateMonthSelects(monthNames) {
+                const startVal = startMonth.value;
+                const endVal = endMonth.value;
+
+                // Clear
+                startMonth.innerHTML = '';
+                endMonth.innerHTML = '';
+
+                for (let i = 0; i < 12; i++) {
+                    const opt1 = document.createElement('option');
+                    opt1.value = i + 1;
+                    opt1.textContent = monthNames[i];
+                    startMonth.appendChild(opt1);
+
+                    const opt2 = document.createElement('option');
+                    opt2.value = i + 1;
+                    opt2.textContent = monthNames[i];
+                    endMonth.appendChild(opt2);
+                }
+
+                // Restore values or set defaults
+                startMonth.value = startVal || 1;
+                endMonth.value = endVal || 1;
+            }
+
+            // --- Main Calculation ---
+            function calculate() {
+                // Get values
+                const sYear = parseInt(startYear.value, 10) || 500;
+                const sMonth = parseInt(startMonth.value, 10) || 1;
+                const sDay = parseInt(startDay.value, 10) || 1;
+
+                const eYear = parseInt(endYear.value, 10) || 2025;
+                const eMonth = parseInt(endMonth.value, 10) || 1;
+                const eDay = parseInt(endDay.value, 10) || 1;
+
+                // Validate start and end
+                const startDate = getValidDate(sYear, sMonth, sDay);
+                const endDate = getValidDate(eYear, eMonth, eDay);
+                const t = translations[currentLang];
+
+                if (!startDate || !endDate) {
+                    resultDays.textContent = '—';
+                    if (!startDate) {
+                        resultSub.textContent = t.invalidDate + ' (start)';
+                    } else if (!endDate) {
+                        resultSub.textContent = t.invalidDate + ' (end)';
+                    } else {
+                        resultSub.textContent = t.invalidDate;
+                    }
+                    return;
+                }
+
+                // Ensure start year >= 500 (already validated in getValidDate)
+                // Compute difference
+                const diff = dateDifference(startDate, endDate);
+                // Display absolute? Usually number of days from start to end, could be negative if end before start.
+                // But we show absolute? The request says "عدد الأيام من تاريخ معين إلى تاريخ ثان" — likely absolute or signed?
+                // We'll display absolute value for beauty but show note if reversed.
+                // Better to keep sign but display absolute with direction indicator? For simplicity, show absolute but indicate if reversed.
+                const absDiff = Math.abs(diff);
+                resultDays.textContent = absDiff;
+
+                // Build sub text: show direction if negative
+                if (diff < 0) {
+                    // End date is before start date
+                    resultSub.textContent = currentLang === 'ar' ? 'التاريخ الثاني قبل الأول' :
+                                            (currentLang === 'fr' ? 'La date de fin est antérieure' : 'End date is before start date');
+                } else {
+                    // Positive or zero
+                    const unit = t.resultUnit;
+                    resultSub.textContent = `${absDiff} ${unit}`;
+                }
+
+                // Also update result label to be more descriptive? keep as is.
+            }
+
+            // --- Event Listeners ---
+            function attachEvents() {
+                const inputs = [startDay, startMonth, startYear, endDay, endMonth, endYear];
+                inputs.forEach(el => {
+                    el.addEventListener('input', calculate);
+                    el.addEventListener('change', calculate);
+                });
+
+                langBtns.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const lang = this.dataset.lang;
+                        setLanguage(lang);
+                    });
+                });
+            }
+
+            // --- Initialization ---
+            function init() {
+                // Set default values: start 01/01/500, end today's date? but to be nice: 01/01/2025
+                const today = new Date();
+                // But we want to demonstrate a nice range, maybe set end to current date
+                const currentYear = Math.min(today.getFullYear(), 9999);
+                const currentMonth = today.getMonth() + 1;
+                const currentDay = today.getDate();
+
+                startDay.value = 1;
+                startMonth.value = 1;
+                startYear.value = 500;
+
+                endDay.value = currentDay;
+                endMonth.value = currentMonth;
+                endYear.value = currentYear;
+
+                // Populate months initially (will be overwritten by setLanguage)
+                // But we need months before setLanguage? setLanguage calls populate.
+                // Start with Arabic default
+                setLanguage('ar');
+
+                // After setLanguage, months are populated and values preserved? 
+                // setLanguage calls populate which tries to preserve startVal/endVal from current select, which might be empty.
+                // To be safe, set defaults again after setLanguage.
+                // Actually setLanguage calls populate which uses startVal from existing select. Since initially empty, startVal = '' -> defaults to 1.
+                // Then we set values again.
+                startMonth.value = 1;
+                endMonth.value = currentMonth;
+
+                // Re-attach values and calculate
+                calculate();
+                attachEvents();
+            }
+
+            // Start
+            init();
+
+        })();
+    </script>
+</body>
+</html>
